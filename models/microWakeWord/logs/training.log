@@ -1,0 +1,705 @@
+INFO:absl:Loading and analyzing data sets.
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 4
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 10
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 14
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 22
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 36
+Model: "functional"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃ Connected to      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input_layer         │ (16, 178, 40)     │          0 │ -                 │
+│ (InputLayer)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ expand_dims         │ (16, 178, 1, 40)  │          0 │ input_layer[0][0] │
+│ (ExpandDims)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream (Stream)     │ (16, 87, 1, 32)   │      6,400 │ expand_dims[0][0] │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation          │ (16, 87, 1, 32)   │          0 │ stream[0][0]      │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_1 (Stream)   │ (16, 87, 1, 32)   │          0 │ activation[0][0]  │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d    │ (16, 83, 1, 32)   │        192 │ stream_1[0][0]    │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_1 (Conv2D)   │ (16, 83, 1, 64)   │      2,048 │ depthwise_conv2d… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalization │ (16, 83, 1, 64)   │        256 │ conv2d_1[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_1        │ (16, 83, 1, 64)   │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_2 (Stream)   │ (16, 83, 1, 64)   │          0 │ activation_1[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ channel_split       │ [(16, 83, 1, 32), │          0 │ stream_2[0][0]    │
+│ (ChannelSplit)      │ (16, 83, 1, 32)]  │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep        │ (16, 83, 1, 32)   │          0 │ channel_split[0]… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_1      │ (16, 83, 1, 32)   │          0 │ channel_split[0]… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_1  │ (16, 77, 1, 32)   │        256 │ strided_keep[0][… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_2  │ (16, 73, 1, 32)   │        384 │ strided_keep_1[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop        │ (16, 73, 1, 32)   │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_1      │ (16, 73, 1, 32)   │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate         │ (16, 73, 1, 64)   │          0 │ strided_drop[0][… │
+│ (Concatenate)       │                   │            │ strided_drop_1[0… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_2 (Conv2D)   │ (16, 73, 1, 64)   │      4,096 │ concatenate[0][0] │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (16, 73, 1, 64)   │        256 │ conv2d_2[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_2        │ (16, 73, 1, 64)   │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_3 (Stream)   │ (16, 73, 1, 64)   │          0 │ activation_2[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ channel_split_1     │ [(16, 73, 1, 32), │          0 │ stream_3[0][0]    │
+│ (ChannelSplit)      │ (16, 73, 1, 32)]  │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_2      │ (16, 73, 1, 32)   │          0 │ channel_split_1[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_3      │ (16, 73, 1, 32)   │          0 │ channel_split_1[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_3  │ (16, 65, 1, 32)   │        320 │ strided_keep_2[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_4  │ (16, 59, 1, 32)   │        512 │ strided_keep_3[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_2      │ (16, 59, 1, 32)   │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_3      │ (16, 59, 1, 32)   │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate_1       │ (16, 59, 1, 64)   │          0 │ strided_drop_2[0… │
+│ (Concatenate)       │                   │            │ strided_drop_3[0… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_3 (Conv2D)   │ (16, 59, 1, 64)   │      4,096 │ concatenate_1[0]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (16, 59, 1, 64)   │        256 │ conv2d_3[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_3        │ (16, 59, 1, 64)   │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_4 (Stream)   │ (16, 59, 1, 64)   │          0 │ activation_3[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_5  │ (16, 37, 1, 64)   │      1,536 │ stream_4[0][0]    │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_4 (Conv2D)   │ (16, 37, 1, 64)   │      4,096 │ depthwise_conv2d… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (16, 37, 1, 64)   │        256 │ conv2d_4[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_4        │ (16, 37, 1, 64)   │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_5 (Stream)   │ (16, 37, 1, 64)   │          0 │ activation_4[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ flatten (Flatten)   │ (16, 2368)        │          0 │ stream_5[0][0]    │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense (Dense)       │ (16, 1)           │      2,369 │ flatten[0][0]     │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+ Total params: 27,329 (106.75 KB)
+ Trainable params: 26,817 (104.75 KB)
+ Non-trainable params: 512 (2.00 KB)
+INFO:absl:None
+INFO:absl:Step #500: rate 0.001000, accuracy 97.44%, recall 88.73%, precision 94.43%, cross entropy 0.072229
+INFO:absl:Step 500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.64%, recall = 98.64%, precision = 100.00%, ambient false positives = 4032, estimated false positives per hour = 416.93918, loss = 0.06789, auc = 0.99791, average viable recall = 0.101407260
+INFO:absl:Sharding callback duration: 33 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 10.14073%; no faph cutoff is 1.00
+INFO:absl:Step #1000: rate 0.001000, accuracy 99.19%, recall 96.33%, precision 97.96%, cross entropy 0.025857
+INFO:absl:Step 1000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.33%, recall = 99.33%, precision = 100.00%, ambient false positives = 2311, estimated false positives per hour = 238.97482, loss = 0.03712, auc = 0.99879, average viable recall = 0.056542329
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 10.14073%; no faph cutoff is 1.00
+INFO:absl:Step #1500: rate 0.001000, accuracy 99.28%, recall 97.54%, precision 97.70%, cross entropy 0.020405
+INFO:absl:Step 1500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 96.94%, recall = 96.94%, precision = 100.00%, ambient false positives = 116, estimated false positives per hour = 11.99527, loss = 0.02845, auc = 0.99670, average viable recall = 0.845333711
+INFO:absl:Sharding callback duration: 40 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 84.53337%; no faph cutoff is 1.00
+INFO:absl:Step #2000: rate 0.001000, accuracy 99.39%, recall 97.71%, precision 98.12%, cross entropy 0.019325
+INFO:absl:Step 2000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.09%, recall = 99.09%, precision = 100.00%, ambient false positives = 497, estimated false positives per hour = 51.39355, loss = 0.01447, auc = 0.99889, average viable recall = 0.273892701
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 84.53337%; no faph cutoff is 1.00
+INFO:absl:Step #2500: rate 0.001000, accuracy 99.51%, recall 98.21%, precision 98.46%, cross entropy 0.016802
+INFO:absl:Step 2500 (nonstreaming): Validation: recall at no faph = 44.303 with cutoff 0.99, accuracy = 82.46%, recall = 82.46%, precision = 100.00%, ambient false positives = 14, estimated false positives per hour = 1.44771, loss = 0.14667, auc = 0.98329, average viable recall = 0.778724103
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 84.53337%; no faph cutoff is 1.00
+INFO:absl:Step #3000: rate 0.001000, accuracy 99.64%, recall 98.38%, precision 99.14%, cross entropy 0.015699
+INFO:absl:Step 3000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.20%, recall = 99.20%, precision = 100.00%, ambient false positives = 723, estimated false positives per hour = 74.76365, loss = 0.01723, auc = 0.99888, average viable recall = 0.103506520
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 84.53337%; no faph cutoff is 1.00
+INFO:absl:Step #3500: rate 0.001000, accuracy 99.54%, recall 98.19%, precision 98.76%, cross entropy 0.015146
+INFO:absl:Step 3500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 95.36%, recall = 95.36%, precision = 100.00%, ambient false positives = 296, estimated false positives per hour = 30.60863, loss = 0.04253, auc = 0.99549, average viable recall = 0.586900458
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 84.53337%; no faph cutoff is 1.00
+INFO:absl:Step #4000: rate 0.001000, accuracy 99.54%, recall 98.14%, precision 98.58%, cross entropy 0.015353
+INFO:absl:Step 4000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.57%, recall = 98.57%, precision = 100.00%, ambient false positives = 369, estimated false positives per hour = 38.15738, loss = 0.01663, auc = 0.99834, average viable recall = 0.340762377
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 84.53337%; no faph cutoff is 1.00
+INFO:absl:Step #4500: rate 0.001000, accuracy 99.51%, recall 98.20%, precision 98.45%, cross entropy 0.016992
+INFO:absl:Step 4500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 95.34%, recall = 95.34%, precision = 100.00%, ambient false positives = 40, estimated false positives per hour = 4.13630, loss = 0.04034, auc = 0.99503, average viable recall = 0.878493043
+INFO:absl:Sharding callback duration: 45 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 87.84930%; no faph cutoff is 1.00
+INFO:absl:Step #5000: rate 0.001000, accuracy 99.66%, recall 98.74%, precision 98.83%, cross entropy 0.014387
+INFO:absl:Step 5000 (nonstreaming): Validation: recall at no faph = 88.940 with cutoff 0.95, accuracy = 95.21%, recall = 95.21%, precision = 100.00%, ambient false positives = 25, estimated false positives per hour = 2.58519, loss = 0.03992, auc = 0.99588, average viable recall = 0.928051702
+INFO:absl:Sharding callback duration: 27 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 92.80517%; no faph cutoff is 0.95
+INFO:absl:Step #5500: rate 0.001000, accuracy 99.76%, recall 99.09%, precision 99.34%, cross entropy 0.010388
+INFO:absl:Step 5500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 96.90%, recall = 96.90%, precision = 100.00%, ambient false positives = 89, estimated false positives per hour = 9.20327, loss = 0.02584, auc = 0.99744, average viable recall = 0.771170550
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 92.80517%; no faph cutoff is 0.95
+INFO:absl:Step #6000: rate 0.001000, accuracy 99.65%, recall 98.83%, precision 98.83%, cross entropy 0.010427
+INFO:absl:Step 6000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.35%, recall = 99.35%, precision = 100.00%, ambient false positives = 596, estimated false positives per hour = 61.63089, loss = 0.01563, auc = 0.99872, average viable recall = 0.216166615
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 92.80517%; no faph cutoff is 0.95
+INFO:absl:Step #6500: rate 0.001000, accuracy 99.61%, recall 98.39%, precision 98.98%, cross entropy 0.012676
+INFO:absl:Step 6500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.74%, recall = 98.74%, precision = 100.00%, ambient false positives = 353, estimated false positives per hour = 36.50286, loss = 0.01757, auc = 0.99822, average viable recall = 0.366816729
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 92.80517%; no faph cutoff is 0.95
+INFO:absl:Step #7000: rate 0.001000, accuracy 99.43%, recall 97.93%, precision 98.25%, cross entropy 0.017339
+INFO:absl:Step 7000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.66%, recall = 98.66%, precision = 100.00%, ambient false positives = 995, estimated false positives per hour = 102.89050, loss = 0.02666, auc = 0.99766, average viable recall = 0.094398506
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 92.80517%; no faph cutoff is 0.95
+INFO:absl:Step #7500: rate 0.001000, accuracy 99.75%, recall 98.96%, precision 99.31%, cross entropy 0.009634
+INFO:absl:Step 7500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.12%, recall = 99.12%, precision = 100.00%, ambient false positives = 229, estimated false positives per hour = 23.68033, loss = 0.01275, auc = 0.99864, average viable recall = 0.564993222
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 92.80517%; no faph cutoff is 0.95
+INFO:absl:Step #8000: rate 0.001000, accuracy 99.66%, recall 98.89%, precision 98.97%, cross entropy 0.014011
+INFO:absl:Step 8000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.23%, recall = 98.23%, precision = 100.00%, ambient false positives = 46, estimated false positives per hour = 4.75675, loss = 0.01660, auc = 0.99793, average viable recall = 0.882964132
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 92.80517%; no faph cutoff is 0.95
+INFO:absl:Step #8500: rate 0.001000, accuracy 99.82%, recall 99.46%, precision 99.28%, cross entropy 0.009102
+INFO:absl:Step 8500 (nonstreaming): Validation: recall at no faph = 87.075 with cutoff 0.95, accuracy = 94.95%, recall = 94.95%, precision = 100.00%, ambient false positives = 7, estimated false positives per hour = 0.72385, loss = 0.04591, auc = 0.99473, average viable recall = 0.951001779
+INFO:absl:Sharding callback duration: 117 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.10018%; no faph cutoff is 0.95
+INFO:absl:Step #9000: rate 0.001000, accuracy 99.78%, recall 98.90%, precision 99.57%, cross entropy 0.008174
+INFO:absl:Step 9000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.22%, recall = 98.22%, precision = 100.00%, ambient false positives = 123, estimated false positives per hour = 12.71913, loss = 0.02183, auc = 0.99722, average viable recall = 0.629012022
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.10018%; no faph cutoff is 0.95
+INFO:absl:Step #9500: rate 0.001000, accuracy 99.75%, recall 99.09%, precision 99.25%, cross entropy 0.010461
+INFO:absl:Step 9500 (nonstreaming): Validation: recall at no faph = 86.307 with cutoff 0.97, accuracy = 95.52%, recall = 95.52%, precision = 100.00%, ambient false positives = 24, estimated false positives per hour = 2.48178, loss = 0.04753, auc = 0.99369, average viable recall = 0.933155219
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.10018%; no faph cutoff is 0.95
+INFO:absl:Step #10000: rate 0.001000, accuracy 99.50%, recall 97.97%, precision 98.64%, cross entropy 0.018952
+INFO:absl:Step 10000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.01%, recall = 98.01%, precision = 100.00%, ambient false positives = 1100, estimated false positives per hour = 113.74829, loss = 0.02925, auc = 0.99796, average viable recall = 0.199228555
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.10018%; no faph cutoff is 0.95
+INFO:absl:Step #10500: rate 0.001000, accuracy 99.71%, recall 98.92%, precision 99.17%, cross entropy 0.008756
+INFO:absl:Step 10500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.77%, recall = 98.77%, precision = 100.00%, ambient false positives = 53, estimated false positives per hour = 5.48060, loss = 0.01466, auc = 0.99796, average viable recall = 0.952549011
+INFO:absl:Sharding callback duration: 49 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #11000: rate 0.001000, accuracy 99.76%, recall 99.25%, precision 99.17%, cross entropy 0.007403
+INFO:absl:Step 11000 (nonstreaming): Validation: recall at no faph = 91.350 with cutoff 0.99, accuracy = 98.22%, recall = 98.22%, precision = 100.00%, ambient false positives = 131, estimated false positives per hour = 13.54639, loss = 0.01681, auc = 0.99852, average viable recall = 0.946246349
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #11500: rate 0.001000, accuracy 99.59%, recall 98.47%, precision 98.72%, cross entropy 0.014812
+INFO:absl:Step 11500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.86%, recall = 98.86%, precision = 100.00%, ambient false positives = 351, estimated false positives per hour = 36.29605, loss = 0.01777, auc = 0.99808, average viable recall = 0.199794099
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #12000: rate 0.001000, accuracy 99.75%, recall 98.91%, precision 99.41%, cross entropy 0.010662
+INFO:absl:Step 12000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.84%, recall = 98.84%, precision = 100.00%, ambient false positives = 143, estimated false positives per hour = 14.78728, loss = 0.01288, auc = 0.99852, average viable recall = 0.786224996
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #12500: rate 0.001000, accuracy 99.82%, recall 99.39%, precision 99.39%, cross entropy 0.004804
+INFO:absl:Step 12500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.32%, recall = 98.32%, precision = 100.00%, ambient false positives = 22, estimated false positives per hour = 2.27497, loss = 0.01705, auc = 0.99832, average viable recall = 0.944444359
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #13000: rate 0.001000, accuracy 99.62%, recall 98.46%, precision 98.97%, cross entropy 0.011821
+INFO:absl:Step 13000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.76%, recall = 98.76%, precision = 100.00%, ambient false positives = 81, estimated false positives per hour = 8.37601, loss = 0.01161, auc = 0.99891, average viable recall = 0.941122967
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #13500: rate 0.001000, accuracy 99.76%, recall 99.00%, precision 99.41%, cross entropy 0.010093
+INFO:absl:Step 13500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.28%, recall = 99.28%, precision = 100.00%, ambient false positives = 142, estimated false positives per hour = 14.68387, loss = 0.00929, auc = 0.99901, average viable recall = 0.776294385
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #14000: rate 0.001000, accuracy 99.74%, recall 98.88%, precision 99.31%, cross entropy 0.011789
+INFO:absl:Step 14000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.20%, recall = 99.20%, precision = 100.00%, ambient false positives = 101, estimated false positives per hour = 10.44416, loss = 0.00990, auc = 0.99899, average viable recall = 0.850542366
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #14500: rate 0.001000, accuracy 99.84%, recall 99.41%, precision 99.49%, cross entropy 0.006230
+INFO:absl:Step 14500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.73%, recall = 98.73%, precision = 100.00%, ambient false positives = 42, estimated false positives per hour = 4.34312, loss = 0.01496, auc = 0.99797, average viable recall = 0.922907403
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #15000: rate 0.001000, accuracy 99.75%, recall 99.21%, precision 99.04%, cross entropy 0.006672
+INFO:absl:Step 15000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.70%, recall = 98.70%, precision = 100.00%, ambient false positives = 122, estimated false positives per hour = 12.61572, loss = 0.01641, auc = 0.99777, average viable recall = 0.731270893
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 95.25490%; no faph cutoff is 1.00
+INFO:absl:Step #15500: rate 0.001000, accuracy 99.72%, recall 98.72%, precision 99.40%, cross entropy 0.011574
+INFO:absl:Step 15500 (nonstreaming): Validation: recall at no faph = 94.719 with cutoff 0.84, accuracy = 96.75%, recall = 96.75%, precision = 100.00%, ambient false positives = 2, estimated false positives per hour = 0.20682, loss = 0.02991, auc = 0.99672, average viable recall = 0.974673961
+INFO:absl:Sharding callback duration: 46 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #16000: rate 0.001000, accuracy 99.78%, recall 98.94%, precision 99.47%, cross entropy 0.011421
+INFO:absl:Step 16000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.38%, recall = 98.38%, precision = 100.00%, ambient false positives = 53, estimated false positives per hour = 5.48060, loss = 0.01718, auc = 0.99771, average viable recall = 0.869009253
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #16500: rate 0.001000, accuracy 99.78%, recall 98.88%, precision 99.56%, cross entropy 0.008765
+INFO:absl:Step 16500 (nonstreaming): Validation: recall at no faph = 93.637 with cutoff 0.87, accuracy = 96.33%, recall = 96.33%, precision = 100.00%, ambient false positives = 5, estimated false positives per hour = 0.51704, loss = 0.03185, auc = 0.99587, average viable recall = 0.966913605
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #17000: rate 0.001000, accuracy 99.74%, recall 98.80%, precision 99.40%, cross entropy 0.007236
+INFO:absl:Step 17000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.05%, recall = 99.05%, precision = 100.00%, ambient false positives = 143, estimated false positives per hour = 14.78728, loss = 0.00931, auc = 0.99946, average viable recall = 0.928930858
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #17500: rate 0.001000, accuracy 99.78%, recall 99.07%, precision 99.40%, cross entropy 0.007133
+INFO:absl:Step 17500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.22%, recall = 99.22%, precision = 100.00%, ambient false positives = 117, estimated false positives per hour = 12.09868, loss = 0.00944, auc = 0.99904, average viable recall = 0.851293776
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #18000: rate 0.001000, accuracy 99.79%, recall 99.17%, precision 99.42%, cross entropy 0.005642
+INFO:absl:Step 18000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.49%, recall = 98.49%, precision = 100.00%, ambient false positives = 42, estimated false positives per hour = 4.34312, loss = 0.01492, auc = 0.99842, average viable recall = 0.923132944
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #18500: rate 0.001000, accuracy 99.81%, recall 99.31%, precision 99.40%, cross entropy 0.006774
+INFO:absl:Step 18500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.22%, recall = 99.22%, precision = 100.00%, ambient false positives = 224, estimated false positives per hour = 23.16329, loss = 0.01099, auc = 0.99894, average viable recall = 0.597365096
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #19000: rate 0.001000, accuracy 99.81%, recall 99.34%, precision 99.42%, cross entropy 0.004993
+INFO:absl:Step 19000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 97.80%, recall = 97.80%, precision = 100.00%, ambient false positives = 149, estimated false positives per hour = 15.40772, loss = 0.02227, auc = 0.99731, average viable recall = 0.535660435
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #19500: rate 0.001000, accuracy 99.72%, recall 98.90%, precision 99.24%, cross entropy 0.008101
+INFO:absl:Step 19500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.13%, recall = 99.13%, precision = 100.00%, ambient false positives = 114, estimated false positives per hour = 11.78846, loss = 0.00966, auc = 0.99880, average viable recall = 0.925220939
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #20000: rate 0.001000, accuracy 99.72%, recall 98.97%, precision 99.14%, cross entropy 0.010378
+INFO:absl:Step 20000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 97.36%, recall = 97.36%, precision = 100.00%, ambient false positives = 96, estimated false positives per hour = 9.92712, loss = 0.02274, auc = 0.99785, average viable recall = 0.860227129
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.46740%; no faph cutoff is 0.84
+INFO:absl:Step #20500: rate 0.001000, accuracy 99.81%, recall 99.20%, precision 99.46%, cross entropy 0.005857
+INFO:absl:Step 20500 (nonstreaming): Validation: recall at no faph = 94.729 with cutoff 0.99, accuracy = 98.51%, recall = 98.51%, precision = 100.00%, ambient false positives = 24, estimated false positives per hour = 2.48178, loss = 0.01449, auc = 0.99797, average viable recall = 0.978433948
+INFO:absl:Sharding callback duration: 40 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #21000: rate 0.001000, accuracy 99.86%, recall 99.58%, precision 99.49%, cross entropy 0.003989
+INFO:absl:Step 21000 (nonstreaming): Validation: recall at no faph = 91.574 with cutoff 0.03, accuracy = 83.53%, recall = 83.53%, precision = 100.00%, ambient false positives = 0, estimated false positives per hour = 0.00000, loss = 0.19909, auc = 0.97037, average viable recall = 0.931337340
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #21500: rate 0.001000, accuracy 99.82%, recall 99.39%, precision 99.39%, cross entropy 0.007273
+INFO:absl:Step 21500 (nonstreaming): Validation: recall at no faph = 94.989 with cutoff 0.89, accuracy = 97.42%, recall = 97.42%, precision = 100.00%, ambient false positives = 9, estimated false positives per hour = 0.93067, loss = 0.02260, auc = 0.99755, average viable recall = 0.973730910
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #22000: rate 0.001000, accuracy 99.88%, recall 99.31%, precision 99.83%, cross entropy 0.006903
+INFO:absl:Step 22000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.63%, recall = 99.63%, precision = 100.00%, ambient false positives = 1781, estimated false positives per hour = 184.16882, loss = 0.02548, auc = 0.99921, average viable recall = 0.128656924
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #22500: rate 0.001000, accuracy 99.69%, recall 98.77%, precision 99.18%, cross entropy 0.010429
+INFO:absl:Step 22500 (nonstreaming): Validation: recall at no faph = 91.858 with cutoff 0.98, accuracy = 97.20%, recall = 97.20%, precision = 100.00%, ambient false positives = 17, estimated false positives per hour = 1.75793, loss = 0.02923, auc = 0.99617, average viable recall = 0.965419103
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #23000: rate 0.001000, accuracy 99.84%, recall 99.32%, precision 99.58%, cross entropy 0.004819
+INFO:absl:Step 23000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.05%, recall = 99.05%, precision = 100.00%, ambient false positives = 66, estimated false positives per hour = 6.82490, loss = 0.01113, auc = 0.99858, average viable recall = 0.902440794
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #23500: rate 0.001000, accuracy 99.80%, recall 99.14%, precision 99.48%, cross entropy 0.008248
+INFO:absl:Step 23500 (nonstreaming): Validation: recall at no faph = 95.143 with cutoff 0.87, accuracy = 97.81%, recall = 97.81%, precision = 100.00%, ambient false positives = 11, estimated false positives per hour = 1.13748, loss = 0.02057, auc = 0.99783, average viable recall = 0.975684636
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #24000: rate 0.001000, accuracy 99.78%, recall 99.24%, precision 99.24%, cross entropy 0.005184
+INFO:absl:Step 24000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.16%, recall = 99.16%, precision = 100.00%, ambient false positives = 64, estimated false positives per hour = 6.61808, loss = 0.01177, auc = 0.99847, average viable recall = 0.877401721
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #24500: rate 0.001000, accuracy 99.81%, recall 99.32%, precision 99.40%, cross entropy 0.005503
+INFO:absl:Step 24500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.53%, recall = 98.53%, precision = 100.00%, ambient false positives = 177, estimated false positives per hour = 18.30313, loss = 0.01582, auc = 0.99820, average viable recall = 0.799787450
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #25000: rate 0.001000, accuracy 99.80%, recall 99.18%, precision 99.50%, cross entropy 0.004643
+INFO:absl:Step 25000 (nonstreaming): Validation: recall at no faph = 89.166 with cutoff 0.69, accuracy = 90.77%, recall = 90.77%, precision = 100.00%, ambient false positives = 4, estimated false positives per hour = 0.41363, loss = 0.10824, auc = 0.98439, average viable recall = 0.934325876
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #25500: rate 0.001000, accuracy 99.81%, recall 99.30%, precision 99.39%, cross entropy 0.006449
+INFO:absl:Step 25500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.86%, recall = 98.86%, precision = 100.00%, ambient false positives = 67, estimated false positives per hour = 6.92831, loss = 0.01243, auc = 0.99838, average viable recall = 0.845014387
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #26000: rate 0.001000, accuracy 99.79%, recall 99.15%, precision 99.41%, cross entropy 0.009741
+INFO:absl:Step 26000 (nonstreaming): Validation: recall at no faph = 88.524 with cutoff 0.86, accuracy = 93.75%, recall = 93.75%, precision = 100.00%, ambient false positives = 5, estimated false positives per hour = 0.51704, loss = 0.05780, auc = 0.99278, average viable recall = 0.944021209
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #26500: rate 0.001000, accuracy 99.82%, recall 99.30%, precision 99.47%, cross entropy 0.005849
+INFO:absl:Step 26500 (nonstreaming): Validation: recall at no faph = 91.622 with cutoff 0.93, accuracy = 96.60%, recall = 96.60%, precision = 100.00%, ambient false positives = 10, estimated false positives per hour = 1.03408, loss = 0.03083, auc = 0.99641, average viable recall = 0.962794295
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 97.84339%; no faph cutoff is 0.99
+INFO:absl:Step #27000: rate 0.001000, accuracy 99.80%, recall 99.21%, precision 99.38%, cross entropy 0.006032
+INFO:absl:Step 27000 (nonstreaming): Validation: recall at no faph = 94.149 with cutoff 0.97, accuracy = 98.29%, recall = 98.29%, precision = 100.00%, ambient false positives = 6, estimated false positives per hour = 0.62045, loss = 0.01708, auc = 0.99764, average viable recall = 0.980130669
+INFO:absl:Sharding callback duration: 32 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #27500: rate 0.001000, accuracy 99.78%, recall 98.99%, precision 99.49%, cross entropy 0.007315
+INFO:absl:Step 27500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.98%, recall = 98.98%, precision = 100.00%, ambient false positives = 50, estimated false positives per hour = 5.17038, loss = 0.00997, auc = 0.99887, average viable recall = 0.952711041
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #28000: rate 0.001000, accuracy 99.90%, recall 99.66%, precision 99.66%, cross entropy 0.002754
+INFO:absl:Step 28000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.86%, recall = 98.86%, precision = 100.00%, ambient false positives = 52, estimated false positives per hour = 5.37719, loss = 0.01300, auc = 0.99833, average viable recall = 0.929649196
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #28500: rate 0.001000, accuracy 99.88%, recall 99.40%, precision 99.74%, cross entropy 0.006151
+INFO:absl:Step 28500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.20%, recall = 99.20%, precision = 100.00%, ambient false positives = 123, estimated false positives per hour = 12.71913, loss = 0.00951, auc = 0.99884, average viable recall = 0.775653516
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #29000: rate 0.001000, accuracy 99.86%, recall 99.50%, precision 99.58%, cross entropy 0.005396
+INFO:absl:Step 29000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.47%, recall = 98.47%, precision = 100.00%, ambient false positives = 33, estimated false positives per hour = 3.41245, loss = 0.01500, auc = 0.99813, average viable recall = 0.947175239
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #29500: rate 0.001000, accuracy 99.86%, recall 99.30%, precision 99.73%, cross entropy 0.005325
+INFO:absl:Step 29500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.68%, recall = 98.68%, precision = 100.00%, ambient false positives = 26, estimated false positives per hour = 2.68860, loss = 0.01439, auc = 0.99801, average viable recall = 0.951603853
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #30000: rate 0.001000, accuracy 99.72%, recall 98.97%, precision 99.14%, cross entropy 0.008431
+INFO:absl:Step 30000 (nonstreaming): Validation: recall at no faph = 89.714 with cutoff 0.99, accuracy = 98.20%, recall = 98.20%, precision = 100.00%, ambient false positives = 41, estimated false positives per hour = 4.23971, loss = 0.01657, auc = 0.99801, average viable recall = 0.959541023
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #30500: rate 0.001000, accuracy 99.78%, recall 99.13%, precision 99.30%, cross entropy 0.006582
+INFO:absl:Step 30500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.42%, recall = 99.42%, precision = 100.00%, ambient false positives = 179, estimated false positives per hour = 18.50995, loss = 0.00765, auc = 0.99925, average viable recall = 0.702276760
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #31000: rate 0.001000, accuracy 99.86%, recall 99.39%, precision 99.65%, cross entropy 0.004132
+INFO:absl:Step 31000 (nonstreaming): Validation: recall at no faph = 95.343 with cutoff 0.88, accuracy = 97.65%, recall = 97.65%, precision = 100.00%, ambient false positives = 7, estimated false positives per hour = 0.72385, loss = 0.02052, auc = 0.99799, average viable recall = 0.977137149
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #31500: rate 0.001000, accuracy 99.86%, recall 99.31%, precision 99.74%, cross entropy 0.002837
+INFO:absl:Step 31500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.53%, recall = 99.53%, precision = 100.00%, ambient false positives = 189, estimated false positives per hour = 19.54402, loss = 0.00727, auc = 0.99911, average viable recall = 0.808429258
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.01307%; no faph cutoff is 0.97
+INFO:absl:Step #32000: rate 0.001000, accuracy 99.82%, recall 99.37%, precision 99.52%, cross entropy 0.006012
+INFO:absl:Step 32000 (nonstreaming): Validation: recall at no faph = 96.807 with cutoff 0.97, accuracy = 98.85%, recall = 98.85%, precision = 100.00%, ambient false positives = 31, estimated false positives per hour = 3.20563, loss = 0.01029, auc = 0.99884, average viable recall = 0.982433848
+INFO:absl:Sharding callback duration: 39 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.24338%; no faph cutoff is 0.97
+INFO:absl:Step #32500: rate 0.001000, accuracy 99.86%, recall 99.48%, precision 99.56%, cross entropy 0.004183
+INFO:absl:Step 32500 (nonstreaming): Validation: recall at no faph = 97.229 with cutoff 0.91, accuracy = 98.69%, recall = 98.69%, precision = 100.00%, ambient false positives = 12, estimated false positives per hour = 1.24089, loss = 0.01482, auc = 0.99803, average viable recall = 0.983033659
+INFO:absl:Sharding callback duration: 31 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.30337%; no faph cutoff is 0.91
+INFO:absl:Step #33000: rate 0.001000, accuracy 99.88%, recall 99.56%, precision 99.56%, cross entropy 0.003163
+INFO:absl:Step 33000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.99%, recall = 98.99%, precision = 100.00%, ambient false positives = 36, estimated false positives per hour = 3.72267, loss = 0.01252, auc = 0.99827, average viable recall = 0.955638910
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.30337%; no faph cutoff is 0.91
+INFO:absl:Step #33500: rate 0.001000, accuracy 99.89%, recall 99.58%, precision 99.67%, cross entropy 0.005372
+INFO:absl:Step 33500 (nonstreaming): Validation: recall at no faph = 96.889 with cutoff 0.87, accuracy = 98.42%, recall = 98.42%, precision = 100.00%, ambient false positives = 6, estimated false positives per hour = 0.62045, loss = 0.01468, auc = 0.99844, average viable recall = 0.985899664
+INFO:absl:Sharding callback duration: 37 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.58997%; no faph cutoff is 0.87
+INFO:absl:Step #34000: rate 0.001000, accuracy 99.82%, recall 99.22%, precision 99.57%, cross entropy 0.008180
+INFO:absl:Step 34000 (nonstreaming): Validation: recall at no faph = 96.945 with cutoff 0.99, accuracy = 99.41%, recall = 99.41%, precision = 100.00%, ambient false positives = 74, estimated false positives per hour = 7.65216, loss = 0.00731, auc = 0.99912, average viable recall = 0.984911971
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.58997%; no faph cutoff is 0.87
+INFO:absl:Step #34500: rate 0.001000, accuracy 99.90%, recall 99.57%, precision 99.74%, cross entropy 0.002668
+INFO:absl:Step 34500 (nonstreaming): Validation: recall at no faph = 97.838 with cutoff 0.98, accuracy = 99.28%, recall = 99.28%, precision = 100.00%, ambient false positives = 33, estimated false positives per hour = 3.41245, loss = 0.00832, auc = 0.99885, average viable recall = 0.984895948
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.58997%; no faph cutoff is 0.87
+INFO:absl:Step #35000: rate 0.001000, accuracy 99.90%, recall 99.57%, precision 99.74%, cross entropy 0.003452
+INFO:absl:Step 35000 (nonstreaming): Validation: recall at no faph = 97.157 with cutoff 0.99, accuracy = 99.06%, recall = 99.06%, precision = 100.00%, ambient false positives = 21, estimated false positives per hour = 2.17156, loss = 0.01072, auc = 0.99871, average viable recall = 0.986309871
+INFO:absl:Sharding callback duration: 36 microseconds
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #35500: rate 0.001000, accuracy 99.90%, recall 99.50%, precision 99.83%, cross entropy 0.005279
+INFO:absl:Step 35500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.49%, recall = 99.49%, precision = 100.00%, ambient false positives = 115, estimated false positives per hour = 11.89187, loss = 0.00728, auc = 0.99900, average viable recall = 0.859296972
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #36000: rate 0.001000, accuracy 99.80%, recall 99.14%, precision 99.48%, cross entropy 0.007395
+INFO:absl:Step 36000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.78%, recall = 98.78%, precision = 100.00%, ambient false positives = 22, estimated false positives per hour = 2.27497, loss = 0.01273, auc = 0.99841, average viable recall = 0.953901369
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #36500: rate 0.001000, accuracy 99.85%, recall 99.31%, precision 99.65%, cross entropy 0.004678
+INFO:absl:Step 36500 (nonstreaming): Validation: recall at no faph = 90.454 with cutoff 0.97, accuracy = 96.63%, recall = 96.63%, precision = 100.00%, ambient false positives = 13, estimated false positives per hour = 1.34430, loss = 0.03594, auc = 0.99517, average viable recall = 0.961551798
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #37000: rate 0.001000, accuracy 99.80%, recall 99.34%, precision 99.34%, cross entropy 0.005966
+INFO:absl:Step 37000 (nonstreaming): Validation: recall at no faph = 94.483 with cutoff 0.97, accuracy = 98.83%, recall = 98.83%, precision = 100.00%, ambient false positives = 28, estimated false positives per hour = 2.89541, loss = 0.01103, auc = 0.99870, average viable recall = 0.978596528
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #37500: rate 0.001000, accuracy 99.88%, recall 99.42%, precision 99.75%, cross entropy 0.003131
+INFO:absl:Step 37500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.47%, recall = 99.47%, precision = 100.00%, ambient false positives = 95, estimated false positives per hour = 9.82372, loss = 0.00721, auc = 0.99909, average viable recall = 0.831387606
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #38000: rate 0.001000, accuracy 99.85%, recall 99.31%, precision 99.66%, cross entropy 0.004942
+INFO:absl:Step 38000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.55%, recall = 99.55%, precision = 100.00%, ambient false positives = 195, estimated false positives per hour = 20.16447, loss = 0.00682, auc = 0.99940, average viable recall = 0.780791633
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #38500: rate 0.001000, accuracy 99.84%, recall 99.48%, precision 99.39%, cross entropy 0.004651
+INFO:absl:Step 38500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.48%, recall = 99.48%, precision = 100.00%, ambient false positives = 145, estimated false positives per hour = 14.99409, loss = 0.00753, auc = 0.99910, average viable recall = 0.805225602
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #39000: rate 0.001000, accuracy 99.75%, recall 99.06%, precision 99.23%, cross entropy 0.009025
+INFO:absl:Step 39000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.90%, recall = 98.90%, precision = 100.00%, ambient false positives = 41, estimated false positives per hour = 4.23971, loss = 0.00997, auc = 0.99896, average viable recall = 0.946165059
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #39500: rate 0.001000, accuracy 99.91%, recall 99.67%, precision 99.75%, cross entropy 0.002196
+INFO:absl:Step 39500 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 98.81%, recall = 98.81%, precision = 100.00%, ambient false positives = 15, estimated false positives per hour = 1.55111, loss = 0.01168, auc = 0.99838, average viable recall = 0.956981969
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Step #40000: rate 0.001000, accuracy 99.79%, recall 99.13%, precision 99.39%, cross entropy 0.009049
+INFO:absl:Step 40000 (nonstreaming): Validation: recall at no faph = 0.000 with cutoff 1.00, accuracy = 99.57%, recall = 99.57%, precision = 100.00%, ambient false positives = 161, estimated false positives per hour = 16.64861, loss = 0.00584, auc = 0.99957, average viable recall = 0.958807565
+INFO:absl:So far the best minimization quantity is 0.000 with best maximization quantity of 98.63099%; no faph cutoff is 0.99
+INFO:absl:Sharding callback duration: 58 microseconds
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 4
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 10
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 14
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 22
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 36
+Model: "functional_1"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃ Connected to      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input_layer_1       │ (1, 178, 40)      │          0 │ -                 │
+│ (InputLayer)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ expand_dims_1       │ (1, 178, 1, 40)   │          0 │ input_layer_1[0]… │
+│ (ExpandDims)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_6 (Stream)   │ (1, 87, 1, 32)    │      6,400 │ expand_dims_1[0]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_5        │ (1, 87, 1, 32)    │          0 │ stream_6[0][0]    │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_7 (Stream)   │ (1, 87, 1, 32)    │          0 │ activation_5[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_6  │ (1, 83, 1, 32)    │        192 │ stream_7[0][0]    │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_6 (Conv2D)   │ (1, 83, 1, 64)    │      2,048 │ depthwise_conv2d… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (1, 83, 1, 64)    │        256 │ conv2d_6[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_6        │ (1, 83, 1, 64)    │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_8 (Stream)   │ (1, 83, 1, 64)    │          0 │ activation_6[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ channel_split_2     │ [(1, 83, 1, 32),  │          0 │ stream_8[0][0]    │
+│ (ChannelSplit)      │ (1, 83, 1, 32)]   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_4      │ (1, 83, 1, 32)    │          0 │ channel_split_2[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_5      │ (1, 83, 1, 32)    │          0 │ channel_split_2[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_7  │ (1, 77, 1, 32)    │        256 │ strided_keep_4[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_8  │ (1, 73, 1, 32)    │        384 │ strided_keep_5[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_4      │ (1, 73, 1, 32)    │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_5      │ (1, 73, 1, 32)    │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate_2       │ (1, 73, 1, 64)    │          0 │ strided_drop_4[0… │
+│ (Concatenate)       │                   │            │ strided_drop_5[0… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_7 (Conv2D)   │ (1, 73, 1, 64)    │      4,096 │ concatenate_2[0]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (1, 73, 1, 64)    │        256 │ conv2d_7[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_7        │ (1, 73, 1, 64)    │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_9 (Stream)   │ (1, 73, 1, 64)    │          0 │ activation_7[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ channel_split_3     │ [(1, 73, 1, 32),  │          0 │ stream_9[0][0]    │
+│ (ChannelSplit)      │ (1, 73, 1, 32)]   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_6      │ (1, 73, 1, 32)    │          0 │ channel_split_3[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_7      │ (1, 73, 1, 32)    │          0 │ channel_split_3[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_9  │ (1, 65, 1, 32)    │        320 │ strided_keep_6[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_10 │ (1, 59, 1, 32)    │        512 │ strided_keep_7[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_6      │ (1, 59, 1, 32)    │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_7      │ (1, 59, 1, 32)    │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate_3       │ (1, 59, 1, 64)    │          0 │ strided_drop_6[0… │
+│ (Concatenate)       │                   │            │ strided_drop_7[0… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_8 (Conv2D)   │ (1, 59, 1, 64)    │      4,096 │ concatenate_3[0]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (1, 59, 1, 64)    │        256 │ conv2d_8[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_8        │ (1, 59, 1, 64)    │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_10 (Stream)  │ (1, 59, 1, 64)    │          0 │ activation_8[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_11 │ (1, 37, 1, 64)    │      1,536 │ stream_10[0][0]   │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_9 (Conv2D)   │ (1, 37, 1, 64)    │      4,096 │ depthwise_conv2d… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (1, 37, 1, 64)    │        256 │ conv2d_9[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_9        │ (1, 37, 1, 64)    │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_11 (Stream)  │ (1, 37, 1, 64)    │          0 │ activation_9[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ flatten_1 (Flatten) │ (1, 2368)         │          0 │ stream_11[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense_1 (Dense)     │ (1, 1)            │      2,369 │ flatten_1[0][0]   │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+ Total params: 27,329 (106.75 KB)
+ Trainable params: 26,817 (104.75 KB)
+ Non-trainable params: 512 (2.00 KB)
+INFO:absl:None
+INFO:absl:Saving streaming model
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 3
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 4
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 10
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 14
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 22
+WARNING:absl:ring_buffer_size_in_time_dim overwritten by the passed-in value: 36
+Model: "functional_1"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃ Connected to      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input_audio         │ (1, 2, 40)        │          0 │ -                 │
+│ (InputLayer)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ expand_dims_1       │ (1, 2, 1, 40)     │          0 │ input_audio[0][0] │
+│ (ExpandDims)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_6 (Stream)   │ (1, 1, 1, 32)     │      6,520 │ expand_dims_1[0]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_5        │ (1, 1, 1, 32)     │          0 │ stream_6[0][0]    │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_7 (Stream)   │ (1, 5, 1, 32)     │        128 │ activation_5[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_6  │ (1, 1, 1, 32)     │        192 │ stream_7[0][0]    │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_6 (Conv2D)   │ (1, 1, 1, 64)     │      2,048 │ depthwise_conv2d… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (1, 1, 1, 64)     │        256 │ conv2d_6[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_6        │ (1, 1, 1, 64)     │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_8 (Stream)   │ (1, 11, 1, 64)    │        640 │ activation_6[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ channel_split_2     │ [(1, 11, 1, 32),  │          0 │ stream_8[0][0]    │
+│ (ChannelSplit)      │ (1, 11, 1, 32)]   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_4      │ (1, 7, 1, 32)     │          0 │ channel_split_2[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_5      │ (1, 11, 1, 32)    │          0 │ channel_split_2[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_7  │ (1, 1, 1, 32)     │        256 │ strided_keep_4[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_8  │ (1, 1, 1, 32)     │        384 │ strided_keep_5[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_4      │ (1, 1, 1, 32)     │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_5      │ (1, 1, 1, 32)     │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate_2       │ (1, 1, 1, 64)     │          0 │ strided_drop_4[0… │
+│ (Concatenate)       │                   │            │ strided_drop_5[0… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_7 (Conv2D)   │ (1, 1, 1, 64)     │      4,096 │ concatenate_2[0]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (1, 1, 1, 64)     │        256 │ conv2d_7[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_7        │ (1, 1, 1, 64)     │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_9 (Stream)   │ (1, 15, 1, 64)    │        896 │ activation_7[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ channel_split_3     │ [(1, 15, 1, 32),  │          0 │ stream_9[0][0]    │
+│ (ChannelSplit)      │ (1, 15, 1, 32)]   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_6      │ (1, 9, 1, 32)     │          0 │ channel_split_3[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_keep_7      │ (1, 15, 1, 32)    │          0 │ channel_split_3[… │
+│ (StridedKeep)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_9  │ (1, 1, 1, 32)     │        320 │ strided_keep_6[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_10 │ (1, 1, 1, 32)     │        512 │ strided_keep_7[0… │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_6      │ (1, 1, 1, 32)     │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ strided_drop_7      │ (1, 1, 1, 32)     │          0 │ depthwise_conv2d… │
+│ (StridedDrop)       │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concatenate_3       │ (1, 1, 1, 64)     │          0 │ strided_drop_6[0… │
+│ (Concatenate)       │                   │            │ strided_drop_7[0… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_8 (Conv2D)   │ (1, 1, 1, 64)     │      4,096 │ concatenate_3[0]… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (1, 1, 1, 64)     │        256 │ conv2d_8[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_8        │ (1, 1, 1, 64)     │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_10 (Stream)  │ (1, 23, 1, 64)    │      1,408 │ activation_8[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ depthwise_conv2d_11 │ (1, 1, 1, 64)     │      1,536 │ stream_10[0][0]   │
+│ (DepthwiseConv2D)   │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv2d_9 (Conv2D)   │ (1, 1, 1, 64)     │      4,096 │ depthwise_conv2d… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ batch_normalizatio… │ (1, 1, 1, 64)     │        256 │ conv2d_9[0][0]    │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ activation_9        │ (1, 1, 1, 64)     │          0 │ batch_normalizat… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ stream_11 (Stream)  │ (1, 37, 1, 64)    │      2,304 │ activation_9[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ flatten_1 (Flatten) │ (1, 2368)         │          0 │ stream_11[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense_1 (Dense)     │ (1, 1)            │      2,369 │ flatten_1[0][0]   │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+ Total params: 32,825 (128.22 KB)
+ Trainable params: 26,817 (104.75 KB)
+ Non-trainable params: 6,008 (23.47 KB)
+INFO:absl:Function `call` contains input name(s) resource with unsupported characters which will be renamed to dense_1_1_add_readvariableop_resource in the SavedModel.
+INFO:absl:Function `call` contains input name(s) resource with unsupported characters which will be renamed to dense_1_1_add_readvariableop_resource in the SavedModel.
+INFO:absl:Sharding callback duration: 38 microseconds
+INFO:absl:Sharding callback duration: 22 microseconds
+INFO:absl:Writing fingerprint to /data/work/trained_models/wakeword/stream_state_internal/fingerprint.pb
+Saved artifact at '/data/work/trained_models/wakeword/stream_state_internal'. The following endpoints are available:
+
+* Endpoint 'serve'
+  inputs (POSITIONAL_OR_KEYWORD): TensorSpec(shape=(1, 2, 40), dtype=tf.float32, name=None)
+  training (POSITIONAL_OR_KEYWORD): Literal[None]
+  mask (POSITIONAL_OR_KEYWORD): Literal[None]
+Output Type:
+  TensorSpec(shape=(1, 1), dtype=tf.float32, name=None)
+Captures:
+  125960592573456: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125961733233104: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592574224: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592572688: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592573264: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592575376: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592575184: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592572880: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592575952: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592576528: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592576912: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592574992: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592575760: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592577488: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592576336: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592577872: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592577104: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592574800: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592577680: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592578448: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592578832: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592577296: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592576144: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592579408: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592578256: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592579792: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592579024: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592576720: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592579600: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592580368: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592580752: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592579216: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592574032: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592581328: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592580560: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592579984: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592580176: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592581904: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592582288: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592578640: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  125960592581136: TensorSpec(shape=(), dtype=tf.resource, name=None)
+INFO:absl:Converting quantized streaming model to TFLite
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1769584180.220273     169 tf_tfl_flatbuffer_helpers.cc:364] Ignored output_format.
+W0000 00:00:1769584180.223089     169 tf_tfl_flatbuffer_helpers.cc:367] Ignored drop_control_dependency.
+I0000 00:00:1769584180.289211     169 mlir_graph_optimization_pass.cc:437] MLIR V1 optimization pass is not enabled
+fully_quantize: 0, inference_type: 6, input_inference_type: INT8, output_inference_type: UINT8
+INFO:absl:Testing the TFLite quantized streaming model false accept per hour and false rejection rates at various cutoffs.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+INFO:absl:Testing the testing_ambient set.
+INFO:absl:Testing the testing set.
+INFO:absl:AUC 0.01756
+INFO:absl:Cutoff 0.99: frr=0.0152; faph=0.000
+INFO:absl:Cutoff 0.98: frr=0.0124; faph=0.187
+INFO:absl:Cutoff 0.97: frr=0.0108; faph=0.375
+INFO:absl:Cutoff 0.95: frr=0.0098; faph=0.562
+INFO:absl:Cutoff 0.94: frr=0.0096; faph=0.750
+INFO:absl:Cutoff 0.90: frr=0.0086; faph=1.125
+INFO:absl:Cutoff 0.84: frr=0.0062; faph=1.312
+INFO:absl:Cutoff 0.83: frr=0.0062; faph=1.500
+INFO:absl:Cutoff 0.82: frr=0.0062; faph=1.687
+INFO:absl:Cutoff 0.80: frr=0.0062; faph=1.875
+INFO:absl:Cutoff 0.80: frr=0.0060; faph=2.000
